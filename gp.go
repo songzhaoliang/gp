@@ -86,6 +86,13 @@ type Pool struct {
 }
 
 func NewPool(numWorkers, jobQueueLen int) *Pool {
+	if numWorkers < 1 {
+		numWorkers = 1
+	}
+	if jobQueueLen < 1 {
+		jobQueueLen = 1
+	}
+
 	workerPool := make(chan *Worker, numWorkers)
 	jobQueue := make(chan Job, jobQueueLen)
 
@@ -96,7 +103,9 @@ func NewPool(numWorkers, jobQueueLen int) *Pool {
 }
 
 func (p *Pool) Go(job Job) {
-	p.jobQueue <- job
+	if job != nil {
+		p.jobQueue <- job
+	}
 }
 
 func (p *Pool) Release() {
